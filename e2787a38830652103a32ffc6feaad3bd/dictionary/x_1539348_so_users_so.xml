@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="8e297e7c830652103a32ffc6feaad375" label="users_so" max_length="40" name="x_1539348_so_users_so" type="collection">
+        <element default="javascript:current.getTableName();" label="Class" max_length="80" name="sys_class_name" type="sys_class_name"/>
+        <element attributes="edge_encryption_enabled=true" label="Displayname" max_length="60" name="displayname" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Username" max_length="40" name="username" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Email" max_length="120" name="email" type="string"/>
+        <index name="index">
+            <element name="sys_class_name"/>
+        </index>
+    </element>
+</database>
