@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>true</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>x_1539348_so_users_so</collection>
+        <condition/>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition/>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Envoyer les données à l'API SCIM</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
+
+    // Construire l'objet JSON
+    var data = {
+        "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
+        "userName": current.username.toString(),
+        "displayName": current.displayname.toString(),
+        "active": true,
+        "emails": [
+            {
+                "value": current.email.toString(),
+                "type": "work",
+                "primary": true
+            }
+        ]
+    };
+
+    // Convertir l'objet en chaîne JSON
+    var jsonData = JSON.stringify(data);
+
+    // Configurer la requête HTTP
+    var request = new sn_ws.RESTMessageV2();
+    request.setEndpoint('https://earth-apis.my.evidian.com/scim/v2/api/Users');
+    request.setHttpMethod('POST');
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.setRequestHeader('Authorization', 'Bearer eyJraWQiOiJyc2EyNTZfc2lnIiwiYWxnIjoiUlMyNTYifQ.eyJhdXRoZW50aWNhdGlvbmxldmVsIjoiMTAiLCJzdWIiOiJld29pYzNWaUlpQTZJQ0poZVcxaGJtVXVhMkZpWW1GQVZYTmxjaUJFYVhKbFkzUnZjbmtpTEFvaWJtRnRaU0lnT2lBaVFYbHRZVzVsSUV0QlFrSkJJaXdLSW1kcGRtVnVYMjVoYldVaUlEb2dJa0Y1YldGdVpTSXNDaUptWVcxcGJIbGZibUZ0WlNJZ09pQWlTMEZDUWtFaUxBb2laVzFoYVd3aUlEb2dJbUY1YldGdVpTNXJZV0ppWVVCbGRtbGtaVzR1WTI5dElpd0tJbXh2WTJGc1pTSWdPaUFpWlc0aUxBb2ljSEpsWm1WeWNtVmtYM1Z6WlhKdVlXMWxJaUE2SUNKaGVXMWhibVV1YTJGaVltRWlMQW9pWjJWdVpHVnlJaUE2SUNKdFlXeGxJaXdLSW1selgyOXBaR05mWVdSdGFXNXBjM1J5WVhSdmNpSWdPaUJtWVd4elpRcDkiLCJhdXRoZW50aWNhdGlvbnBvbGljeW5hbWUiOiJBdXRoZW50aWNhdGlvbiB3aXRoIGNlcnRpZmljYXRlIiwiYXpwIjoiZWQwOWNmMjEtZDJmMi00NWRiLTk5MGYtMzdiZDJlOWY5MTY1Iiwic2NvcGUiOiJhZGRyZXNzIHBob25lIG9wZW5pZCBwcm9maWxlIGVtYWlsIiwiaXNzIjoiaHR0cHM6XC9cL2VhcnRoLWF1dGgubXkuZXZpZGlhbi5jb21cL2Nob2ljZVwvb2lkY1wvIiwiYXV0aGVudGljYXRpb250eXBlbmFtZSI6IkxQRl9QUklNX0FVVEhfQ0VSVElGSUNBVEUiLCJhdXRoZW50aWNhdGlvbnR5cGUiOiIzIiwiZXhwIjoxNzYzNTM3MDY2LCJpYXQiOjE3MzIwMDEwNjYsImp0aSI6ImZmM2ZmOGUyLTU3MGItNDY0OC05NjQzLTRlNzU2ZTI3NjEyOCJ9.JgCylit4Wn07Zzg_vx6M9WDtgKPFbI8oMc2aYNSlqfu_XOW4b2zYIKcnBiWeBlk6ke_dOcX7KRiA0geFnTdM0l7lWR6t-ks1gqcuD0mvD4ppSVRSwV0FExARziu8YKVWZCfulLc-ZwB_gsINhXPX3o2CR6-gaveXfeJXlIaGf8e-284EEUCVWUK4xlFusW2DU0kwmdSyvkuu0RlBF0z2BtVT7p0CxCmWWFnQ70TDuOf5A7I59WJHdUiBuU7-Ff8q0QVPkXxJULf7klV3_AHLAVQ5wRUxuPJLb1SlvmLQii1riAwTOQhirNl32z_q1oSmk1CP4PzPVcny84dfRh7ybw');
+    request.setRequestBody(jsonData);
+
+    // Envoyer la requête
+    try {
+        var response = request.execute();
+        var responseBody = response.getBody();
+        var httpStatus = response.getStatusCode();
+
+        // Log de la réponse pour le débogage
+        gs.info('Statut HTTP: ' + httpStatus);
+        gs.info('Corps de la réponse: ' + responseBody);
+
+        // Gérer la réponse en fonction du code de statut
+        if (httpStatus == 201 || httpStatus == 200) {
+            gs.info('Données envoyées avec succès à l\'API SCIM.');
+        } else {
+            gs.error('Erreur lors de l\'envoi des données: ' + responseBody);
+        }
+    } catch(ex) {
+        var message = ex.getMessage();
+        gs.error('Exception lors de l\'appel API: ' + message);
+    }
+
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-11-21 08:12:34</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>8279b6bc830652103a32ffc6feaad309</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>Envoyer les données à l'API SCIM</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
+        <sys_update_name>sys_script_8279b6bc830652103a32ffc6feaad309</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-11-21 08:39:30</sys_updated_on>
+        <template/>
+        <when>async_always</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=8279b6bc830652103a32ffc6feaad309"/>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>8279b6bc830652103a32ffc6feaad309</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-11-21 08:12:34</sys_created_on>
+        <sys_id>090afe3c830652103a32ffc6feaad3fd</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-11-21 08:12:34</sys_updated_on>
+        <table>sys_script</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>
