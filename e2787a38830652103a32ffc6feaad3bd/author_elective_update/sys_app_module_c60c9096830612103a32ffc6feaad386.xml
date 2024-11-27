@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_app_module">
+    <sys_app_module action="DELETE">
+        <active>true</active>
+        <application display_value="org_so">310c9096830612103a32ffc6feaad382</application>
+        <assessment/>
+        <device_type/>
+        <filter/>
+        <hint/>
+        <homepage/>
+        <image/>
+        <link_type>LIST</link_type>
+        <map_page/>
+        <mobile_title>org_sos</mobile_title>
+        <mobile_view_name>Mobile</mobile_view_name>
+        <name>x_1539348_so_org_so</name>
+        <order/>
+        <override_menu_roles>false</override_menu_roles>
+        <query/>
+        <report/>
+        <require_confirmation>true</require_confirmation>
+        <roles>x_1539348_so.org_so_user</roles>
+        <sys_class_name>sys_app_module</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-11-25 12:33:12</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>c60c9096830612103a32ffc6feaad386</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>org_sos</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
+        <sys_update_name>sys_app_module_c60c9096830612103a32ffc6feaad386</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-11-25 12:33:12</sys_updated_on>
+        <timeline_page/>
+        <title>org_sos</title>
+        <uncancelable>false</uncancelable>
+        <view_name/>
+        <window_name/>
+    </sys_app_module>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="so">e2787a38830652103a32ffc6feaad3bd</application>
+        <file_path/>
+        <instance_id>8e49fcdd1b8e0a5078c7cb7b234bcbde</instance_id>
+        <instance_name>dev264800</instance_name>
+        <name>sys_app_module_c60c9096830612103a32ffc6feaad386</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_app_module"><sys_app_module action="INSERT_OR_UPDATE"><active>true</active><application display_value="org_so">310c9096830612103a32ffc6feaad382</application><assessment/><device_type/><filter/><hint/><homepage/><image/><link_type>LIST</link_type><map_page/><mobile_title>org_sos</mobile_title><mobile_view_name>Mobile</mobile_view_name><name>x_1539348_so_org_so</name><order/><override_menu_roles>false</override_menu_roles><query/><report/><require_confirmation>true</require_confirmation><roles>x_1539348_so.org_so_user</roles><sys_class_name>sys_app_module</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2024-11-25 12:33:12</sys_created_on><sys_domain>global</sys_domain><sys_domain_path>/</sys_domain_path><sys_id>c60c9096830612103a32ffc6feaad386</sys_id><sys_mod_count>0</sys_mod_count><sys_name>org_sos</sys_name><sys_overrides/><sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package><sys_policy/><sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope><sys_update_name>sys_app_module_c60c9096830612103a32ffc6feaad386</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2024-11-25 12:33:12</sys_updated_on><timeline_page/><title>org_sos</title><uncancelable>false</uncancelable><view_name/><window_name/></sys_app_module></record_update>]]></payload>
+        <payload_hash>136657209</payload_hash>
+        <record_name>org_sos</record_name>
+        <reverted_from/>
+        <source>d458977c838652103a32ffc6feaad36c</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-11-25 12:33:12</sys_created_on>
+        <sys_id>8e0c9096830612103a32ffc6feaad396</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193634fc67e0000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-11-25 12:33:12</sys_updated_on>
+        <type>Module</type>
+        <update_guid>820c90960d061210bad5b9fad9043a96</update_guid>
+        <update_guid_history>820c90960d061210bad5b9fad9043a96:136657209</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="org_sos">1060573283c612103a32ffc6feaad394</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-11-27 14:58:08</sys_created_on>
+        <sys_db_object display_value="" name="sys_app_module">sys_app_module</sys_db_object>
+        <sys_id>226839f1be4545ca9b8aeb051c3d77c1</sys_id>
+        <sys_metadata>c60c9096830612103a32ffc6feaad386</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>org_sos</sys_name>
+        <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
+        <sys_scope_delete display_value="">02b72630a9384d0eaeaa80df7b05ec44</sys_scope_delete>
+        <sys_update_name>sys_app_module_c60c9096830612103a32ffc6feaad386</sys_update_name>
+        <sys_update_version display_value="sys_app_module_c60c9096830612103a32ffc6feaad386">8e0c9096830612103a32ffc6feaad396</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-11-27 14:58:08</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

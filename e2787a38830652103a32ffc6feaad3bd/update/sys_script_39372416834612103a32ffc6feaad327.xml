@@ -5,20 +5,20 @@
         <action_delete>false</action_delete>
         <action_insert>true</action_insert>
         <action_query>false</action_query>
-        <action_update>true</action_update>
+        <action_update>false</action_update>
         <active>true</active>
         <add_message>false</add_message>
         <advanced>true</advanced>
         <change_fields>false</change_fields>
         <client_callable>false</client_callable>
-        <collection>x_1539348_so_users_so</collection>
+        <collection>x_1539348_so_org_so</collection>
         <condition/>
         <description/>
         <execute_function>false</execute_function>
         <filter_condition/>
         <is_rest>false</is_rest>
         <message/>
-        <name>Envoyer les users à l'API SCIM</name>
+        <name>Envoyer les organisations à l'API SCIM</name>
         <order>100</order>
         <priority>100</priority>
         <rest_method/>
@@ -29,19 +29,28 @@
         <role_conditions/>
         <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
 
-    // Construire l'objet JSON
+	
+
+	if (!gs.hasRole('x_1539348_so.manager')) {
+        // If the user does not have the role, prevent modification of the approval_status field
+        if (current.isNewRecord() || current.approval_status.changes()) {
+            current.setAbortAction(true); // Abort the action (field modification)
+            gs.addErrorMessage('You do not have the required role to modify the approval status.');
+        }
+    }
+
+	/*if (current.approval_status == 'Approved' && previous.approval_status != 'Approved') {
     var data = {
-        "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
-        "userName": current.username.toString(),
+        "schemas": ["urn:ietf:params:scim:schemas:core:evidian:2.0:Organization"],
+        "name": current.name.toString(),
         "displayName": current.displayname.toString(),
+        "code": current.code.toString(),
+		"type": [],
+        "mailDomain": [],
         "active": true,
-        "emails": [
-            {
-                "value": current.email.toString(),
-                "type": "work",
-                "primary": true
-            }
-        ]
+		"parents": [
+        ],
+        "description": current.description.toString()
     };
 
     // Convertir l'objet en chaîne JSON
@@ -49,10 +58,15 @@
 
     // Configurer la requête HTTP
     var request = new sn_ws.RESTMessageV2();
-    request.setEndpoint('https://earth-apis.my.evidian.com/scim/v2/api/Users');
+    request.setEndpoint('https://earth-apis.my.evidian.com/scim/v2/api/Organizations'); // Remplacez l'endpoint si nécessaire
     request.setHttpMethod('POST');
     request.setRequestHeader('Content-Type', 'application/json');
-    request.setRequestHeader('Authorization', 'Bearer eyJraWQiOiJyc2EyNTZfc2lnIiwiYWxnIjoiUlMyNTYifQ.eyJhdXRoZW50aWNhdGlvbmxldmVsIjoiMiIsInN1YiI6ImV3b2ljM1ZpSWlBNklDSmhlVzFoYm1VdWEyRmlZbUZBVlhObGNpQkVhWEpsWTNSdmNua2lMQW9pYm1GdFpTSWdPaUFpUVhsdFlXNWxJRXRCUWtKQklpd0tJbWRwZG1WdVgyNWhiV1VpSURvZ0lrRjViV0Z1WlNJc0NpSm1ZVzFwYkhsZmJtRnRaU0lnT2lBaVMwRkNRa0VpTEFvaVpXMWhhV3dpSURvZ0ltRjViV0Z1WlM1cllXSmlZVUJsZG1sa2FXRnVMbU52YlNJc0NpSnNiMk5oYkdVaUlEb2dJbVZ1SWl3S0luQnlaV1psY25KbFpGOTFjMlZ5Ym1GdFpTSWdPaUFpWVhsdFlXNWxMbXRoWW1KaElpd0tJbWRsYm1SbGNpSWdPaUFpYldGc1pTSXNDaUpwYzE5dmFXUmpYMkZrYldsdWFYTjBjbUYwYjNJaUlEb2dabUZzYzJVS2ZRPT0iLCJhdXRoZW50aWNhdGlvbnBvbGljeW5hbWUiOiJBdXRoZW50aWNhdGlvbiB3aXRoIGZvcm0iLCJhenAiOiI0ZTg4N2M5Yi03ZTdiLTQ0NzUtOWFlMi04NGE0NDJmMzlmY2MiLCJzY29wZSI6ImFkZHJlc3MgcGhvbmUgb3BlbmlkIHByb2ZpbGUgZW1haWwiLCJpc3MiOiJodHRwczpcL1wvZWFydGgtYXV0aC5teS5ldmlkaWFuLmNvbVwvY2hvaWNlXC9vaWRjXC8iLCJhdXRoZW50aWNhdGlvbnR5cGVuYW1lIjoiTFBGX1BSSU1fQVVUSF9DT09LSUUiLCJhdXRoZW50aWNhdGlvbnR5cGUiOiIyIiwiZXhwIjoxNzY0MTcwNzAzLCJpYXQiOjE3MzI2MzQ3MDMsImp0aSI6IjZjNDZjMWM3LWVjNzMtNGM4Mi1iZDcyLTBmZTJmY2ZkMDU2ZiJ9.lkOdAVtyhctuUSU-ByXszEGtWCFFCpOHgDLdJsP9iuK8pgpyKxcmRGZRC3Xz6hOmbim4ZrUid715ma8-pi-LWzS1Tq2nnuZwjA0D6lifteprcFr3BVNBJOWCGTlyQ_qEw-jrzQcYAHQLK7woVb-q03SPm6-mntOLNVQaL8yzLV6kiC4Q8HOFB3L83r1WNdT4yeFYBk5AlwtBRDYKydeObiHpabyCtk8P7gTvYhlbKSgOe4ag2nwfFBR54pGmgmr5-WnqPWw8on3xQxZN851-O_JiJ5fv6tXYre72SCR9MOIXV_feCrmBTImnvYSn0Fq3PAUFKsQlxvzNdaZLT_uOyw');
+	var token = gs.getProperty('x_1539348_so.scim.api.token');
+    if (!token) {
+        gs.error('Authorization token is missing. Set it in System Properties.');
+        return;
+    }
+    request.setRequestHeader('Authorization', 'Bearer ' + token);
     request.setRequestBody(jsonData);
 
     // Envoyer la requête
@@ -75,35 +89,37 @@
         var message = ex.getMessage();
         gs.error('Exception lors de l\'appel API: ' + message);
     }
+	}*/
 
-})(current, previous);]]></script>
+})(current, previous);
+]]></script>
         <sys_class_name>sys_script</sys_class_name>
         <sys_created_by>admin</sys_created_by>
-        <sys_created_on>2024-11-21 08:12:34</sys_created_on>
+        <sys_created_on>2024-11-25 13:29:31</sys_created_on>
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
-        <sys_id>8279b6bc830652103a32ffc6feaad309</sys_id>
-        <sys_mod_count>4</sys_mod_count>
-        <sys_name>Envoyer les users à l'API SCIM</sys_name>
+        <sys_id>39372416834612103a32ffc6feaad327</sys_id>
+        <sys_mod_count>28</sys_mod_count>
+        <sys_name>Envoyer les organisations à l'API SCIM</sys_name>
         <sys_overrides/>
         <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
         <sys_policy/>
         <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
-        <sys_update_name>sys_script_8279b6bc830652103a32ffc6feaad309</sys_update_name>
+        <sys_update_name>sys_script_39372416834612103a32ffc6feaad327</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-11-26 15:43:15</sys_updated_on>
+        <sys_updated_on>2024-11-27 10:59:21</sys_updated_on>
         <template/>
-        <when>async_always</when>
+        <when>before</when>
     </sys_script>
-    <sys_translated_text action="delete_multiple" query="documentkey=8279b6bc830652103a32ffc6feaad309"/>
+    <sys_translated_text action="delete_multiple" query="documentkey=39372416834612103a32ffc6feaad327"/>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
-        <id>8279b6bc830652103a32ffc6feaad309</id>
+        <id>39372416834612103a32ffc6feaad327</id>
         <sys_created_by>admin</sys_created_by>
-        <sys_created_on>2024-11-21 08:12:34</sys_created_on>
-        <sys_id>090afe3c830652103a32ffc6feaad3fd</sys_id>
+        <sys_created_on>2024-11-25 13:29:31</sys_created_on>
+        <sys_id>b2e8ec16834612103a32ffc6feaad3e4</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-11-21 08:12:34</sys_updated_on>
+        <sys_updated_on>2024-11-25 13:29:31</sys_updated_on>
         <table>sys_script</table>
         <use_es_latest>true</use_es_latest>
     </sys_es_latest_script>

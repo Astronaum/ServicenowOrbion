@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties">
+    <sys_properties action="INSERT_OR_UPDATE">
+        <choices/>
+        <description/>
+        <ignore_cache>true</ignore_cache>
+        <is_private>false</is_private>
+        <name>x_1539348_so.scim.api.token</name>
+        <read_roles/>
+        <suffix>scim.api.token</suffix>
+        <sys_class_name>sys_properties</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-11-27 09:45:11</sys_created_on>
+        <sys_id>f8984eb2834212103a32ffc6feaad311</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_1539348_so.scim.api.token</sys_name>
+        <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
+        <sys_update_name>sys_properties_f8984eb2834212103a32ffc6feaad311</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-11-27 09:45:11</sys_updated_on>
+        <type>string</type>
+        <value>eyJraWQiOiJyc2EyNTZfc2lnIiwiYWxnIjoiUlMyNTYifQ.eyJhdXRoZW50aWNhdGlvbmxldmVsIjoiMiIsInN1YiI6ImV3b2ljM1ZpSWlBNklDSmhlVzFoYm1VdWEyRmlZbUZBVlhObGNpQkVhWEpsWTNSdmNua2lMQW9pYm1GdFpTSWdPaUFpUVhsdFlXNWxJRXRCUWtKQklpd0tJbWRwZG1WdVgyNWhiV1VpSURvZ0lrRjViV0Z1WlNJc0NpSm1ZVzFwYkhsZmJtRnRaU0lnT2lBaVMwRkNRa0VpTEFvaVpXMWhhV3dpSURvZ0ltRjViV0Z1WlM1cllXSmlZVUJsZG1sa2FXRnVMbU52YlNJc0NpSnNiMk5oYkdVaUlEb2dJbVZ1SWl3S0luQnlaV1psY25KbFpGOTFjMlZ5Ym1GdFpTSWdPaUFpWVhsdFlXNWxMbXRoWW1KaElpd0tJbWRsYm1SbGNpSWdPaUFpYldGc1pTSXNDaUpwYzE5dmFXUmpYMkZrYldsdWFYTjBjbUYwYjNJaUlEb2dabUZzYzJVS2ZRPT0iLCJhdXRoZW50aWNhdGlvbnBvbGljeW5hbWUiOiJBdXRoZW50aWNhdGlvbiB3aXRoIGZvcm0iLCJhenAiOiI0ZTg4N2M5Yi03ZTdiLTQ0NzUtOWFlMi04NGE0NDJmMzlmY2MiLCJzY29wZSI6ImFkZHJlc3MgcGhvbmUgb3BlbmlkIHByb2ZpbGUgZW1haWwiLCJpc3MiOiJodHRwczpcL1wvZWFydGgtYXV0aC5teS5ldmlkaWFuLmNvbVwvY2hvaWNlXC9vaWRjXC8iLCJhdXRoZW50aWNhdGlvbnR5cGVuYW1lIjoiTFBGX1BSSU1fQVVUSF9DT09LSUUiLCJhdXRoZW50aWNhdGlvbnR5cGUiOiIyIiwiZXhwIjoxNzY0MTcwNzAzLCJpYXQiOjE3MzI2MzQ3MDMsImp0aSI6IjZjNDZjMWM3LWVjNzMtNGM4Mi1iZDcyLTBmZTJmY2ZkMDU2ZiJ9.lkOdAVtyhctuUSU-ByXszEGtWCFFCpOHgDLdJsP9iuK8pgpyKxcmRGZRC3Xz6hOmbim4ZrUid715ma8-pi-LWzS1Tq2nnuZwjA0D6lifteprcFr3BVNBJOWCGTlyQ_qEw-jrzQcYAHQLK7woVb-q03SPm6-mntOLNVQaL8yzLV6kiC4Q8HOFB3L83r1WNdT4yeFYBk5AlwtBRDYKydeObiHpabyCtk8P7gTvYhlbKSgOe4ag2nwfFBR54pGmgmr5-WnqPWw8on3xQxZN851-O_JiJ5fv6tXYre72SCR9MOIXV_feCrmBTImnvYSn0Fq3PAUFKsQlxvzNdaZLT_uOyw</value>
+        <write_roles/>
+    </sys_properties>
+    <sys_translated_text action="delete_multiple" query="documentkey=f8984eb2834212103a32ffc6feaad311"/>
+</record_update>

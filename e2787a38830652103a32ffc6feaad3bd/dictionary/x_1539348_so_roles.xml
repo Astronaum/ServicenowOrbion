@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="1f9ffeba834612103a32ffc6feaad35f" label="Roles" max_length="40" name="x_1539348_so_roles" type="collection">
+        <element display="true" label="Droit" max_length="50" name="droit" type="string"/>
+        <element label="Value" max_length="256" name="value" type="string"/>
+    </element>
+</database>

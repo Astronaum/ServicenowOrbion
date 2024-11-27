@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="51ebdc56830612103a32ffc6feaad34e" label="org_so" max_length="40" name="x_1539348_so_org_so" type="collection">
+        <element label="Name" max_length="40" name="name" type="string"/>
+        <element label="displayname" max_length="40" name="displayname" type="string"/>
+        <element label="description" max_length="1024" name="description" type="string"/>
+        <element label="Code" max_length="40" name="code" type="string"/>
+    </element>
+</database>

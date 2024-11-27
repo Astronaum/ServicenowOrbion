@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
     <element db_object_id="8e297e7c830652103a32ffc6feaad375" label="users_so" max_length="40" name="x_1539348_so_users_so" type="collection">
+        <element attributes="no_sort=true,slushbucket_ref_no_expand=true" display="true" label="Roles" max_length="1024" name="roles" reference="x_1539348_so_roles" type="glide_list"/>
         <element default="javascript:current.getTableName();" label="Class" max_length="80" name="sys_class_name" type="sys_class_name"/>
         <element attributes="edge_encryption_enabled=true" label="Displayname" max_length="60" name="displayname" type="string"/>
+        <element attributes="edge_encryption_enabled=true" choice="3" default="External Users" label="User type" max_length="40" name="usertype" type="string">
+            <choice>
+                <element inactive_on_update="false" label="External Users" sequence="0" value="External Users"/>
+                <element inactive_on_update="false" label="Internal Users" sequence="1" value="Internal Users"/>
+            </choice>
+        </element>
         <element attributes="edge_encryption_enabled=true" label="Username" max_length="40" name="username" type="string"/>
         <element attributes="edge_encryption_enabled=true" label="Email" max_length="120" name="email" type="string"/>
         <index name="index">
