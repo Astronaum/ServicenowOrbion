@@ -29,22 +29,61 @@
         <role_conditions/>
         <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
 
-    // Construire l'objet JSON
-    var data = {
+    var token = gs.getProperty('x_1539348_so.scim.api.token');
+    if (!token) {
+        gs.error('Authorization token is missing. Set it in System Properties.');
+        return;
+    } else {
+        gs.info('Token acquired: ' + token);
+    }
+
+    var username = current.username || '';
+    var displayName = current.displayname || '';
+    var email = current.email || '';
+    var userType = current.usertype || '';
+
+    var multiSelectField = current.roles || '';
+    var selectedItems = multiSelectField ? multiSelectField.split(',') : [];
+
+    // Fetch human-readable values
+    var humanReadableItems = [];
+    var gr = new GlideRecord('x_1539348_so_roles'); // Replace with your table name
+    gr.addQuery('sys_id', 'IN', selectedItems.join(',')); // Match the UUIDs
+    gr.query();
+    while (gr.next()) {
+        humanReadableItems.push(gr.value.toString());
+    }
+
+    // Log the results
+    /*gs.info('Username: ' + username);
+    gs.info('Display Name: ' + displayName);
+    gs.info('Email: ' + email);
+    gs.info('User Type: ' + userType);
+    gs.info('Multi-Select Field: ' + multiSelectField);
+    gs.info('Selected Items (UUIDs): ' + JSON.stringify(selectedItems));
+    gs.info('Human-Readable Items (Droit): ' + JSON.stringify(humanReadableItems));*/
+
+	var data = {
         "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
-        "userName": current.username.toString(),
-        "displayName": current.displayname.toString(),
+        "userName": username.toString(),
+		"userType": userType.toString(),
+        "displayName": displayName.toString(),
         "active": true,
         "emails": [
             {
-                "value": current.email.toString(),
+                "value": email.toString(),
                 "type": "work",
                 "primary": true
             }
-        ]
+        ],
+		"roles": humanReadableItems.map(function(role) {
+            return { "value": role };
+        })
     };
 
-    // Convertir l'objet en chaîne JSON
+    // Log the final data object for debugging
+    //gs.info('SCIM Data Object: ' + JSON.stringify(data));
+	
     var jsonData = JSON.stringify(data);
 
     // Configurer la requête HTTP
@@ -52,7 +91,7 @@
     request.setEndpoint('https://earth-apis.my.evidian.com/scim/v2/api/Users');
     request.setHttpMethod('POST');
     request.setRequestHeader('Content-Type', 'application/json');
-    request.setRequestHeader('Authorization', 'Bearer eyJraWQiOiJyc2EyNTZfc2lnIiwiYWxnIjoiUlMyNTYifQ.eyJhdXRoZW50aWNhdGlvbmxldmVsIjoiMiIsInN1YiI6ImV3b2ljM1ZpSWlBNklDSmhlVzFoYm1VdWEyRmlZbUZBVlhObGNpQkVhWEpsWTNSdmNua2lMQW9pYm1GdFpTSWdPaUFpUVhsdFlXNWxJRXRCUWtKQklpd0tJbWRwZG1WdVgyNWhiV1VpSURvZ0lrRjViV0Z1WlNJc0NpSm1ZVzFwYkhsZmJtRnRaU0lnT2lBaVMwRkNRa0VpTEFvaVpXMWhhV3dpSURvZ0ltRjViV0Z1WlM1cllXSmlZVUJsZG1sa2FXRnVMbU52YlNJc0NpSnNiMk5oYkdVaUlEb2dJbVZ1SWl3S0luQnlaV1psY25KbFpGOTFjMlZ5Ym1GdFpTSWdPaUFpWVhsdFlXNWxMbXRoWW1KaElpd0tJbWRsYm1SbGNpSWdPaUFpYldGc1pTSXNDaUpwYzE5dmFXUmpYMkZrYldsdWFYTjBjbUYwYjNJaUlEb2dabUZzYzJVS2ZRPT0iLCJhdXRoZW50aWNhdGlvbnBvbGljeW5hbWUiOiJBdXRoZW50aWNhdGlvbiB3aXRoIGZvcm0iLCJhenAiOiI0ZTg4N2M5Yi03ZTdiLTQ0NzUtOWFlMi04NGE0NDJmMzlmY2MiLCJzY29wZSI6ImFkZHJlc3MgcGhvbmUgb3BlbmlkIHByb2ZpbGUgZW1haWwiLCJpc3MiOiJodHRwczpcL1wvZWFydGgtYXV0aC5teS5ldmlkaWFuLmNvbVwvY2hvaWNlXC9vaWRjXC8iLCJhdXRoZW50aWNhdGlvbnR5cGVuYW1lIjoiTFBGX1BSSU1fQVVUSF9DT09LSUUiLCJhdXRoZW50aWNhdGlvbnR5cGUiOiIyIiwiZXhwIjoxNzY0MTcwNzAzLCJpYXQiOjE3MzI2MzQ3MDMsImp0aSI6IjZjNDZjMWM3LWVjNzMtNGM4Mi1iZDcyLTBmZTJmY2ZkMDU2ZiJ9.lkOdAVtyhctuUSU-ByXszEGtWCFFCpOHgDLdJsP9iuK8pgpyKxcmRGZRC3Xz6hOmbim4ZrUid715ma8-pi-LWzS1Tq2nnuZwjA0D6lifteprcFr3BVNBJOWCGTlyQ_qEw-jrzQcYAHQLK7woVb-q03SPm6-mntOLNVQaL8yzLV6kiC4Q8HOFB3L83r1WNdT4yeFYBk5AlwtBRDYKydeObiHpabyCtk8P7gTvYhlbKSgOe4ag2nwfFBR54pGmgmr5-WnqPWw8on3xQxZN851-O_JiJ5fv6tXYre72SCR9MOIXV_feCrmBTImnvYSn0Fq3PAUFKsQlxvzNdaZLT_uOyw');
+    request.setRequestHeader('Authorization', 'Bearer ' + token);
     request.setRequestBody(jsonData);
 
     // Envoyer la requête
@@ -83,7 +122,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>8279b6bc830652103a32ffc6feaad309</sys_id>
-        <sys_mod_count>4</sys_mod_count>
+        <sys_mod_count>13</sys_mod_count>
         <sys_name>Envoyer les users à l'API SCIM</sys_name>
         <sys_overrides/>
         <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
@@ -91,7 +130,7 @@
         <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
         <sys_update_name>sys_script_8279b6bc830652103a32ffc6feaad309</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-11-26 15:43:15</sys_updated_on>
+        <sys_updated_on>2024-12-01 20:27:38</sys_updated_on>
         <template/>
         <when>async_always</when>
     </sys_script>
