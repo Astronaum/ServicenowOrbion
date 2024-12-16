@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script><![CDATA[function loadRolesForCheckboxes() {
+    var ga = new GlideAjax('SCIMUserService');
+    ga.addParam('sysparm_name', 'getRoles');
+
+    ga.getXMLAnswer(function(response) {
+        if (response) {
+            try {
+                // The response should be JSON string; ensure it's being parsed correctly
+                var roles = JSON.parse(response);
+                console.log('Available Roles:', roles);
+
+                // Ensure the role-container is available
+                var roleContainer = document.querySelector('.role-dropdown');
+                if (!roleContainer) {
+                    console.error('Role container not found!');
+                    return;
+                }
+
+                // Clear existing roles before appending new ones
+                roleContainer.innerHTML = '';
+
+                // Append each role as a checkbox
+                roles.forEach(function(role) {
+                    var checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.classList.add('role-option');
+                    checkbox.id = 'role-' + role.value; // Make sure the role object has a 'value' property
+                    checkbox.value = role.value;
+
+                    var label = document.createElement('label');
+                    label.setAttribute('for', 'role-' + role.value);
+                    label.textContent = role.label; // Ensure the role object has a 'label' property
+
+                    // Append the checkbox and label to the container
+                    roleContainer.appendChild(checkbox);
+                    roleContainer.appendChild(label);
+                    roleContainer.appendChild(document.createElement('br')); // Adds a line break between checkboxes
+                });
+            } catch (e) {
+                console.error('Error parsing roles response:', e);
+            }
+        } else {
+            console.error('No response received from GlideAjax.');
+        }
+    });
+}
+
+// Ensure roles are loaded when the page is ready
+document.addEventListener("DOMContentLoaded", function() {
+    loadRolesForCheckboxes();
+});
+
+// Function to handle user creation via GlideAjax
+function createUser() {
+    // Handle required fields
+    var requiredFields = document.querySelectorAll('.required');
+    var allValid = true;
+
+    requiredFields.forEach(function(field) {
+        if (!field.value.trim()) {
+            field.style.borderColor = 'red';  // Highlight empty fields
+            allValid = false;
+        } else {
+            field.style.borderColor = '';  // Reset valid fields
+        }
+    });
+
+    // Handle multiple selection for roles (checkboxes)
+    var roleCheckboxes = document.querySelectorAll('.role-option:checked'); // Get all checked checkboxes
+    if (roleCheckboxes.length === 0) {
+        var roleContainer = document.querySelector('.role-dropdown');
+        roleContainer.style.borderColor = 'red';  // Highlight if no roles are selected
+        allValid = false;
+    } else {
+        var roleContainer = document.querySelector('.role-dropdown');
+        roleContainer.style.borderColor = '';  // Reset if roles are selected
+    }
+
+    // If all fields are valid, proceed with creating the user
+    if (allValid) {
+        var username = document.getElementById('username').value;
+        var displayName = document.getElementById('displayName').value;
+        var email = document.getElementById('email').value;
+        var userType = document.getElementById('userType').value;
+
+        // Get selected roles from checkboxes
+        var selectedRoles = Array.from(roleCheckboxes).map(function(checkbox) {
+            return checkbox.value;
+        });
+
+        console.log('Creating User:', {
+            username,
+            displayName,
+            email,
+            userType,
+            roles: selectedRoles
+        });
+
+        var ga = new GlideAjax('SCIMCreatingUser');
+        ga.addParam('sysparm_name', 'createUser');
+        ga.addParam('username', username);
+        ga.addParam('displayName', displayName);
+        ga.addParam('email', email);
+        ga.addParam('userType', userType);
+        ga.addParam('roles', selectedRoles.join(',')); // Pass selected roles (sys_id values)
+        ga.getXMLAnswer(function(response) {
+            var result = JSON.parse(response);
+            if (result.success) {
+                alert(result.message); // User created successfully
+            } else {
+                alert(result.message); // Error handling
+            }
+        });
+    } else {
+        alert('Please fill in all required fields and select at least one role.');
+    }
+}
+
+]]></client_script>
+        <description>To Create a user with roles</description>
+        <direct>false</direct>
+        <endpoint>x_1539348_so_UserManager.do</endpoint>
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+    <style>
+		.navbar {
+			background-color: #333;
+			overflow: hidden;
+			display: flex;
+			align-items: center;
+		}
+
+		.navbar a {
+			float: left;
+			display: block;
+			color: white;
+			text-align: center;
+			padding: 14px 20px;
+			text-decoration: none;
+		}
+
+		.navbar a:hover {
+			background-color: #ddd;
+			color: black;
+		}
+
+		.navbar-logo {
+			display: flex;
+			align-items: center;
+			padding: 10px 20px;
+		}
+
+		.navbar-logo-image {
+			width: 40px; /* Adjust the size of the logo */
+			height: 40px;
+			margin-right: 10px; /* Space between image and text */
+		}
+
+		.navbar-brand-name {
+			font-size: 18px;
+			font-weight: bold;
+			color: white;
+		}
+
+		.navbar-logo:hover {
+			background-color: #333; /* Optional: change hover effect */
+		}
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 600px;
+            margin: 30px auto;
+        }
+
+        .card h3 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Form Input Styles */
+        label {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        input[type="text"], input[type="email"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        /* Button Styles */
+        button {
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #CCBDBD;
+        }
+
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 3px 3px rgba(38, 143, 255, 0.5);
+        }
+
+        /* Role Checkbox Styling */
+        .role-dropdown {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .role-dropdown input[type="checkbox"] {
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transform: scale(1.2); /* Enlarge checkboxes for better visibility */
+        }
+
+        .role-dropdown label {
+            display: inline-block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+            cursor: pointer; /* Make the label clickable */
+        }
+
+        .role-dropdown .role-option {
+            display: inline-block;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+
+        /* Required Field Indicator */
+        .required {
+            border-color: #ff0000;
+        }
+
+    </style>
+
+    <!-- Navbar Section -->
+    <div class="navbar">
+			<a href="home_page_url" class="navbar-logo">
+				<img src="x_1539348_so.logo_orbion.png" alt="Orbion Logo" class="navbar-logo-image" />
+				<span class="navbar-brand-name">Orbion</span>
+			</a>
+			<a href="x_1539348_so_UserManager.do">Create new User</a>
+			<a href="x_1539348_so_UserRoleManager.do">Add roles to Users</a>
+			<a href="settings_url">Settings</a>
+	</div>
+
+    <!-- Card Section for the Form -->
+    <div class="card">
+        <h3>Create a New User</h3>
+        <form>
+            <label for="username">Username</label>
+            <input type="text" id="username" class="required"></input>
+
+            <label for="displayName">Display Name</label>
+            <input type="text" id="displayName"></input>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" class="required"></input>
+
+            <label for="userType">User Type</label>
+            <select id="userType">
+                <option value="External Users">External Users</option>
+                <option value="Internal Users">Internal Users</option>
+            </select>
+
+            <!-- Role Checkbox Section -->
+            <div id="role-select-container">
+                <label for="roles">Select Roles</label>
+                <div class="role-dropdown">
+                    <div class="role-option">
+                        <input type="checkbox" class="role-option" id="role-1" value="role-1"></input>
+                        <label for="role-1">Role 1</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="checkbox" class="role-option" id="role-2" value="role-2"></input>
+                        <label for="role-2">Role 2</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="checkbox" class="role-option" id="role-3" value="role-3"></input>
+                        <label for="role-3">Role 3</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="checkbox" class="role-option" id="role-4" value="role-4">
+                        <label for="role-4">Role 4</label></input>
+                    </div>
+                    <!-- Dynamically loaded roles will appear here -->
+                </div>
+            </div>
+
+            <button type="button" onclick="createUser()">Create User</button>
+        </form>
+    </div>
+
+</j:jelly>
+]]></html>
+        <name>UserManager</name>
+        <processing_script/>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-16 10:17:40</sys_created_on>
+        <sys_id>2c46c04183a212103a32ffc6feaad35c</sys_id>
+        <sys_mod_count>16</sys_mod_count>
+        <sys_name>UserManager</sys_name>
+        <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
+        <sys_update_name>sys_ui_page_2c46c04183a212103a32ffc6feaad35c</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-16 12:27:25</sys_updated_on>
+    </sys_ui_page>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>2c46c04183a212103a32ffc6feaad35c</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-16 10:17:39</sys_created_on>
+        <sys_id>8966844583a212103a32ffc6feaad3d3</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-16 10:17:39</sys_updated_on>
+        <table>sys_ui_page</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>

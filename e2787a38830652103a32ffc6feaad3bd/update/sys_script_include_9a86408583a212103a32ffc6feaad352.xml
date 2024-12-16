@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_1539348_so.SCIMCreatingUser</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description>To create a user with roles</description>
+        <mobile_callable>false</mobile_callable>
+        <name>SCIMCreatingUser</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var SCIMCreatingUser = Class.create();
+SCIMCreatingUser.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+
+    // Method to handle the user creation via SCIM API
+    createUser: function() {
+        // Retrieve parameters passed from the UI Page
+        var username = this.getParameter('username');
+        var displayName = this.getParameter('displayName');
+        var email = this.getParameter('email');
+        var userType = this.getParameter('userType');
+        var roles = this.getParameter('roles').split(',');  // Roles are passed as sys_ids
+
+        gs.info('Received data from client: Username=' + username + ', Email=' + email + ', Roles=' + roles);
+
+        // Ensure that the token exists
+        var token = gs.getProperty('x_1539348_so.scim.api.token');
+        if (!token) {
+            return JSON.stringify({ success: false, message: 'Authorization token is missing. Set it in System Properties.' });
+        }
+
+        // Construct SCIM payload to create the user
+        var data = {
+            "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
+            "userName": username,
+            "userType": userType || '',
+            "displayName": displayName || '',
+            "active": true,
+            "emails": [{
+                "value": email,
+                "type": "work",
+                "primary": true
+            }],
+            "roles": roles.map(function(roleId) {
+                return { "value": roleId }; // Use the sys_id directly in the SCIM payload
+            })
+        };
+
+        // Prepare the SCIM API request
+        var jsonData = JSON.stringify(data);
+        var request = new sn_ws.RESTMessageV2();
+        request.setEndpoint('https://earth-apis.my.evidian.com/scim/v2/api/Users'); // Replace with the correct SCIM endpoint
+        request.setHttpMethod('POST');
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.setRequestHeader('Authorization', 'Bearer ' + token);
+        request.setRequestBody(jsonData);
+
+        try {
+            var response = request.execute();
+            var responseBody = response.getBody();
+            var httpStatus = response.getStatusCode();
+
+            gs.info('SCIM API Response: ' + responseBody); // Log SCIM API response
+
+            // Return the response based on the status
+            if (httpStatus == 201 || httpStatus == 200) {
+                return JSON.stringify({ success: true, message: 'User created successfully.' });
+            } else {
+                return JSON.stringify({ success: false, message: 'Error during SCIM API request: ' + responseBody });
+            }
+        } catch (ex) {
+            return JSON.stringify({ success: false, message: 'Exception: ' + ex.message });
+        }
+    },
+
+    // Overriding the default get function to process AJAX requests
+    getAjaxProcessor: function() {
+        // Call createUser function when the AJAX call requests the method
+        return this.createUser();
+    }
+
+});
+]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-16 10:18:49</sys_created_on>
+        <sys_id>9a86408583a212103a32ffc6feaad352</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>SCIMCreatingUser</sys_name>
+        <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
+        <sys_update_name>sys_script_include_9a86408583a212103a32ffc6feaad352</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-16 11:02:02</sys_updated_on>
+    </sys_script_include>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>9a86408583a212103a32ffc6feaad352</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-16 10:18:48</sys_created_on>
+        <sys_id>0ea6408583a212103a32ffc6feaad355</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-16 10:18:48</sys_updated_on>
+        <table>sys_script_include</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>
