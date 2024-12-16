@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_1539348_so.SCIMPatchUserRole</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description>To patch a role for a user.</description>
+        <mobile_callable>false</mobile_callable>
+        <name>SCIMPatchUserRole</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var SCIMPatchUserRole = Class.create();
+SCIMPatchUserRole.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+    patchUserRole: function() {
+        // Retrieve parameters sent from the client
+        var userId = this.getParameter("sysparm_user_id");
+        var roleId = this.getParameter("sysparm_role_id");
+
+        try {
+
+			var token = gs.getProperty('x_1539348_so.scim.api.token');
+			gs.info(token);
+            if (!token) {
+                gs.error('API token is missing in system properties.');
+            }
+
+            // Construct the endpoint URL
+            var baseUrl = "https://earth-apis.my.evidian.com/scim/v2/api/Users/";
+            var endpoint = baseUrl + userId;
+
+            // Create the payload
+            var payload = JSON.stringify({
+                schemas: ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+                Operations: [
+                    {
+                        op: "add",
+                        path: "roles",
+                        value: [
+                            {
+                                value: roleId
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            // Create and configure the RESTMessageV2 request
+            var request = new sn_ws.RESTMessageV2();
+            request.setEndpoint(endpoint);
+            request.setHttpMethod("PATCH");
+
+            // Add necessary headers
+            request.setRequestHeader("Content-Type", "application/json");
+            request.setRequestHeader("Authorization", "Bearer " + token); // Replace with a valid token
+
+            // Attach the request payload
+            request.setRequestBody(payload);
+
+            // Execute the HTTP request
+            var response = request.execute();
+            var httpStatus = response.getStatusCode();
+            var responseBody = response.getBody();
+
+            // Log and return the response
+            gs.info("PATCH Request Status: " + httpStatus);
+            gs.info("PATCH Response Body: " + responseBody);
+
+            return responseBody;
+        } catch (e) {
+            gs.error("Error in SCIMPatchUserRole.patchUserRole: " + e.message);
+            return JSON.stringify({ error: e.message });
+        }
+    },
+
+    type: 'SCIMPatchUserRole'
+});]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-16 09:34:15</sys_created_on>
+        <sys_id>5efb3338832212103a32ffc6feaad3ca</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>SCIMPatchUserRole</sys_name>
+        <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
+        <sys_update_name>sys_script_include_5efb3338832212103a32ffc6feaad3ca</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-16 09:36:26</sys_updated_on>
+    </sys_script_include>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>5efb3338832212103a32ffc6feaad3ca</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-16 09:34:15</sys_created_on>
+        <sys_id>5d7c73b4836212103a32ffc6feaad354</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-16 09:34:15</sys_updated_on>
+        <table>sys_script_include</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>

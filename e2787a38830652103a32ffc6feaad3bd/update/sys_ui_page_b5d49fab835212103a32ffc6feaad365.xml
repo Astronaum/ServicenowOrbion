@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script><![CDATA[function functiontorun() {
+    var ga = new GlideAjax('SCIMUserService'); // Name of the Script Include
+    ga.addParam('sysparm_name', 'getUserInfo');
+
+    // Make the call to the Script Include and process the response
+    ga.getXMLAnswer(function(response) {
+        if (response) {
+            try {
+                var parsedResponse = JSON.parse(response);
+                console.log('Parsed Response:', parsedResponse);
+
+                // Check if userData exists and has items
+                if (parsedResponse.userData && Array.isArray(parsedResponse.userData) && parsedResponse.userData.length > 0) {
+                    // Populate the user table without clearing existing rows
+                    var tableBody = document.querySelector('#user-table tbody');
+                    
+                    parsedResponse.userData.forEach(function(userDataItem) {
+                        console.log('User Data Item:', userDataItem); // Log the entire item
+
+                        // Assign 'N/A' if the fields are empty or undefined
+                        var userId = userDataItem.id || 'N/A';
+                        var userName = userDataItem.userName || 'N/A';
+                        var displayName = userDataItem.displayName || 'N/A';
+                        var email = userDataItem.email || 'N/A';
+                        var roles = (userDataItem.roles && userDataItem.roles.length > 0) ? userDataItem.roles.join(', ') : 'No Roles';
+
+                        // Create a new table row
+                        var row = document.createElement('tr');
+
+                        // Insert the values into the row
+                        row.innerHTML = 
+                            '<td class="hidden-column">' + userId + '</td>' +
+                            '<td>' + userName + '</td>' +
+                            '<td>' + displayName + '</td>' +
+                            '<td>' + email + '</td>' +
+                            '<td>' + roles + '</td>' +
+                            '<td>' +
+                                '<select class="role-dropdown" data-user-id="' + userId + '">' +
+                                    // Roles will be populated here dynamically
+                                '</select>' +
+                                '<button class="add-role-btn" data-user-id="' + userId + '">Add Role</button>' +
+                            '</td>';
+
+                        // Append the row to the table body
+                        tableBody.appendChild(row);
+                    });
+
+                    // Now load roles for the dropdown
+                    loadRolesForDropdowns();
+
+                    // Add event listeners to buttons
+                    document.querySelectorAll('.add-role-btn').forEach(function(button) {
+					button.addEventListener('click', function() {
+						var userId = this.getAttribute('data-user-id'); // User ID from the button's data attribute
+						var dropdown = this.previousElementSibling; // Find the associated dropdown
+						var roleId = dropdown.value; // Selected role ID from the dropdown
+
+						if (!userId || !roleId) {
+							console.error("User ID or role ID is missing.");
+							alert("Please select a role before adding.");
+							return;
+						}
+
+						console.log("Adding role to user:", { userId, roleId });
+
+						// Make a GlideAjax call to the Script Include
+						var ga = new GlideAjax("SCIMPatchUserRole");
+						ga.addParam("sysparm_name", "patchUserRole");
+						ga.addParam("sysparm_user_id", userId);
+						ga.addParam("sysparm_role_id", roleId);
+
+						ga.getXMLAnswer(function(response) {
+							try {
+								var result = JSON.parse(response);
+								console.log("Response from Script Include:", result);
+								location.reload();
+								if (result.error) {
+									alert("Error adding role: " + result.error);
+								} else {
+									alert("Role '" + roleId + "' added to user ID '" + userId + "'.");
+								}
+							} catch (e) {
+								console.error("Error parsing response:", e);
+							}
+						});
+					});
+				});
+                } else {
+                    console.error('No user data or invalid format in response.');
+                }
+            } catch (e) {
+                console.error('Error parsing response:', e);
+            }
+        } else {
+            console.error('Received null or empty response from Script Include.');
+        }
+    });
+}
+
+// Fetch available roles and populate the dropdown options
+function loadRolesForDropdowns() {
+    var ga = new GlideAjax('SCIMUserService');
+    ga.addParam('sysparm_name', 'getRoles');
+    ga.getXMLAnswer(function(response) {
+        if (response) {
+            try {
+                var roles = JSON.parse(response);
+                console.log('Available Roles:', roles);
+
+                // Populate the dropdown for each user
+                document.querySelectorAll('.role-dropdown').forEach(function(dropdown) {
+                    roles.forEach(function(role) {
+                        var option = document.createElement('option');
+                        option.value = role.value;
+                        option.textContent = role.label;
+                        dropdown.appendChild(option);
+                    });
+                });
+            } catch (e) {
+                console.error('Error parsing roles response:', e);
+            }
+        }
+    });
+}
+
+// Call the function to load the users on page load
+window.onload = functiontorun;]]></client_script>
+        <description/>
+        <direct>false</direct>
+        <endpoint>x_1539348_so_UserRoleManager.do</endpoint>
+        <html><![CDATA[<j:jelly xmlns:j="jelly:core" xmlns:g="glide" xmlns:g2="null">
+  <html>
+    <head>
+      <style>
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-bottom: 20px;
+			}
+
+			th, td {
+			border: 1px solid #ddd;
+			padding: 8px;
+			text-align: left;
+			}
+
+			th {
+			background-color: #f4f4f4;
+			}
+
+			.user {
+			margin-bottom: 20px;
+			}
+
+			/* Style for the Add Role button */
+			.add-role-btn {
+			cursor: pointer;
+			background-color: #007bff;
+			color: white;
+			border: none;
+			padding: 8px 15px;
+			border-radius: 4px;
+			font-size: 14px;
+			transition: background-color 0.3s ease;
+			width: 100%;  /* Make the button take the full width */
+			}
+
+			.add-role-btn:hover {
+			background-color: #CCBDBD;
+			}
+
+			.add-role-btn:focus {
+			outline: none;
+			box-shadow: 0 0 3px 3px rgba(38, 143, 255, 0.5);
+			}
+
+			/* Styling the select dropdown */
+			.role-dropdown {
+			width: 100%;
+			padding: 8px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			font-size: 14px;
+			background-color: #fff;
+			color: #333;
+			transition: border-color 0.3s ease;
+			}
+
+			.role-dropdown:focus {
+			border-color: #007bff;
+			outline: none;
+			}
+
+			/* Styling the dropdown container */
+			td {
+			vertical-align: middle;
+			}
+
+			.hidden-column {
+				display: none;
+			}
+			.navbar {
+			background-color: #333;
+			overflow: hidden;
+			}
+
+			.navbar a {
+			float: left;
+			display: block;
+			color: white;
+			text-align: center;
+			padding: 14px 20px;
+			text-decoration: none;
+			}
+
+			.navbar a:hover {
+			background-color: #ddd;
+			color: black;
+			}
+
+      </style>
+    </head>
+	    <div class="navbar">
+			<a href="home_page_url">Home</a> <!-- Replace 'home_page_url' with the actual URL -->
+			<a href="user_management_url">User Management</a> <!-- Replace 'user_management_url' with the actual URL -->
+			<a href="roles_url">Roles</a> <!-- Replace 'roles_url' with the actual URL -->
+			<a href="settings_url">Settings</a> <!-- Replace 'settings_url' with the actual URL -->
+		</div>
+    <body>
+      <div id="user-container">
+        <table id="user-table">
+          <thead>
+            <tr>
+              <th class="hidden-column">ID</th>
+              <th>Username</th>
+              <th>Display Name</th>
+              <th>Email</th>
+              <th>Current Roles</th>
+              <th>Add Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Rows will be dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </body>
+  </html>
+</j:jelly>
+]]></html>
+        <name>UserRoleManager</name>
+        <processing_script/>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-12 09:33:57</sys_created_on>
+        <sys_id>b5d49fab835212103a32ffc6feaad365</sys_id>
+        <sys_mod_count>59</sys_mod_count>
+        <sys_name>UserRoleManager</sys_name>
+        <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
+        <sys_update_name>sys_ui_page_b5d49fab835212103a32ffc6feaad365</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-16 10:07:30</sys_updated_on>
+    </sys_ui_page>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>b5d49fab835212103a32ffc6feaad365</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-12 09:33:56</sys_created_on>
+        <sys_id>210653eb835212103a32ffc6feaad3ba</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-12 09:33:56</sys_updated_on>
+        <table>sys_ui_page</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>

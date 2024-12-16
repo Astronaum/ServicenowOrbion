@@ -28,8 +28,7 @@
         <rest_variables/>
         <role_conditions/>
         <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
-
-    var token = gs.getProperty('x_1539348_so.scim.api.token');
+var token = gs.getProperty('x_1539348_so.scim.api.token');
     if (!token) {
         gs.error('Authorization token is missing. Set it in System Properties.');
         return;
@@ -114,15 +113,15 @@
         var message = ex.getMessage();
         gs.error('Exception lors de l\'appel API: ' + message);
     }
-
-})(current, previous);]]></script>
+})(current, previous);
+]]></script>
         <sys_class_name>sys_script</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-11-21 08:12:34</sys_created_on>
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>8279b6bc830652103a32ffc6feaad309</sys_id>
-        <sys_mod_count>13</sys_mod_count>
+        <sys_mod_count>16</sys_mod_count>
         <sys_name>Envoyer les users à l'API SCIM</sys_name>
         <sys_overrides/>
         <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
@@ -130,7 +129,7 @@
         <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
         <sys_update_name>sys_script_8279b6bc830652103a32ffc6feaad309</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-01 20:27:38</sys_updated_on>
+        <sys_updated_on>2024-12-12 13:10:22</sys_updated_on>
         <template/>
         <when>async_always</when>
     </sys_script>

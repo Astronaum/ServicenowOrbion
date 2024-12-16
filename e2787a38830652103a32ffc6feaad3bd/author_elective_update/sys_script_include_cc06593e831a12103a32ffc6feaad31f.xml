@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="DELETE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_1539348_so.RoleManagementScriptInclude</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description/>
+        <mobile_callable>false</mobile_callable>
+        <name>RoleManagementScriptInclude</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var RoleManagementScriptInclude = Class.create();
+RoleManagementScriptInclude.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+
+    addRoleToUser: function() {
+        var userId = this.getParameter('sys_id');
+        var selectedRole = this.getParameter('role');
+        var payload = JSON.parse(this.getParameter('payload'));
+
+        var token = gs.getProperty('x_1539348_so.scim.api.token');
+        if (!token) {
+            return 'Authorization token is missing';
+        }
+
+        var url = 'https://earth-apis.my.evidian.com/scim/v2/api/Users/' + userId;
+        
+        var request = new sn_ws.RESTMessageV2();
+        request.setHttpMethod('PATCH');
+        request.setEndpoint(url);
+        request.setRequestHeader('Authorization', 'Bearer ' + token);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.setRequestBody(JSON.stringify(payload));
+
+        try {
+            var response = request.execute();
+            var responseBody = response.getBody();
+            var httpResponseStatus = response.getStatusCode();
+            
+            if (httpResponseStatus >= 200 && httpResponseStatus < 300) {
+                return 'success';
+            } else {
+                return 'error: ' + responseBody;
+            }
+        } catch (e) {
+            return 'error: ' + e.message;
+        }
+    }
+});
+]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-09 16:19:49</sys_created_on>
+        <sys_id>cc06593e831a12103a32ffc6feaad31f</sys_id>
+        <sys_mod_count>20</sys_mod_count>
+        <sys_name>RoleManagementScriptInclude</sys_name>
+        <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
+        <sys_update_name>sys_script_include_cc06593e831a12103a32ffc6feaad31f</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-12 09:09:26</sys_updated_on>
+    </sys_script_include>
+    <sys_es_latest_script action="DELETE">
+        <id>cc06593e831a12103a32ffc6feaad31f</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-09 16:19:48</sys_created_on>
+        <sys_id>fd26d53e831a12103a32ffc6feaad3da</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-09 16:19:48</sys_updated_on>
+        <table>sys_script_include</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="so">e2787a38830652103a32ffc6feaad3bd</application>
+        <file_path/>
+        <instance_id>8e49fcdd1b8e0a5078c7cb7b234bcbde</instance_id>
+        <instance_name>dev264800</instance_name>
+        <name>sys_script_include_cc06593e831a12103a32ffc6feaad31f</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_script_include"&gt;&lt;sys_script_include action="INSERT_OR_UPDATE"&gt;&lt;access&gt;public&lt;/access&gt;&lt;active&gt;true&lt;/active&gt;&lt;api_name&gt;x_1539348_so.RoleManagementScriptInclude&lt;/api_name&gt;&lt;caller_access/&gt;&lt;client_callable&gt;true&lt;/client_callable&gt;&lt;description/&gt;&lt;mobile_callable&gt;false&lt;/mobile_callable&gt;&lt;name&gt;RoleManagementScriptInclude&lt;/name&gt;&lt;sandbox_callable&gt;false&lt;/sandbox_callable&gt;&lt;script&gt;&lt;![CDATA[var RoleManagementScriptInclude = Class.create();
+RoleManagementScriptInclude.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+
+    addRoleToUser: function() {
+        var userId = this.getParameter('sys_id');
+        var selectedRole = this.getParameter('role');
+        var payload = JSON.parse(this.getParameter('payload'));
+
+        var token = gs.getProperty('x_1539348_so.scim.api.token');
+        if (!token) {
+            return 'Authorization token is missing';
+        }
+
+        var url = 'https://earth-apis.my.evidian.com/scim/v2/api/Users/' + userId;
+        
+        var request = new sn_ws.RESTMessageV2();
+        request.setHttpMethod('PATCH');
+        request.setEndpoint(url);
+        request.setRequestHeader('Authorization', 'Bearer ' + token);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.setRequestBody(JSON.stringify(payload));
+
+        try {
+            var response = request.execute();
+            var responseBody = response.getBody();
+            var httpResponseStatus = response.getStatusCode();
+            
+            if (httpResponseStatus &gt;= 200 &amp;&amp; httpResponseStatus &lt; 300) {
+                return 'success';
+            } else {
+                return 'error: ' + responseBody;
+            }
+        } catch (e) {
+            return 'error: ' + e.message;
+        }
+    }
+});
+]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sys_script_include&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2024-12-09 16:19:49&lt;/sys_created_on&gt;&lt;sys_id&gt;cc06593e831a12103a32ffc6feaad31f&lt;/sys_id&gt;&lt;sys_mod_count&gt;20&lt;/sys_mod_count&gt;&lt;sys_name&gt;RoleManagementScriptInclude&lt;/sys_name&gt;&lt;sys_package display_value="so" source="x_1539348_so"&gt;e2787a38830652103a32ffc6feaad3bd&lt;/sys_package&gt;&lt;sys_policy&gt;read&lt;/sys_policy&gt;&lt;sys_scope display_value="so"&gt;e2787a38830652103a32ffc6feaad3bd&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_script_include_cc06593e831a12103a32ffc6feaad31f&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2024-12-12 09:09:26&lt;/sys_updated_on&gt;&lt;/sys_script_include&gt;&lt;sys_es_latest_script action="INSERT_OR_UPDATE"&gt;&lt;id&gt;cc06593e831a12103a32ffc6feaad31f&lt;/id&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2024-12-09 16:19:48&lt;/sys_created_on&gt;&lt;sys_id&gt;fd26d53e831a12103a32ffc6feaad3da&lt;/sys_id&gt;&lt;sys_mod_count&gt;0&lt;/sys_mod_count&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2024-12-09 16:19:48&lt;/sys_updated_on&gt;&lt;table&gt;sys_script_include&lt;/table&gt;&lt;use_es_latest&gt;true&lt;/use_es_latest&gt;&lt;/sys_es_latest_script&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1114487017</payload_hash>
+        <record_name>RoleManagementScriptInclude</record_name>
+        <reverted_from/>
+        <source>d458977c838652103a32ffc6feaad36c</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-12 09:09:26</sys_created_on>
+        <sys_id>3660df27835212103a32ffc6feaad3df</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193ba2154170000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-12 09:09:26</sys_updated_on>
+        <type>Script Include</type>
+        <update_guid>3a60df274e521210e82c1fa61b237cde</update_guid>
+        <update_guid_history>3a60df274e521210e82c1fa61b237cde:-1114487017,544606ba841e121036fcbe627d76a43b:1472590532,7e45c63a8c1e1210086e3f780883321c:-185909103,0de44676b21e12105aacfa2a38e6bd2a:1219303278,42220a36371e121076365abfa51fb2dc:149077644,fec142361d1e1210c6c296cc47eb7a16:1297839354,9e3e79be49da1210368c0365ec822a51:1614780617,687bbdfa8eda121036f5e7fc32149b8a:-376239280,a129fd3a04da1210b0ca6ff5a07d7690:1713335477,77d8bd3a68da1210fb860084375416a5:-1198974273,bb98b1f6e9da12101942397301f6840b:771920698,c2d7fdb627da121078300b4f145d690f:1959006337,1155b53669da1210ef1f5d7f7c24f879:-444691646,e494b1f264da12108b3778e5535181dc:2002157062,2353b972b9da121081f946f70e84ca77:-444691646,66b035beb69a1210bc463c8061190270:-563136501,8b307dfa889a1210c6e78b842b1969ec:-865383531,f700b17e7b9a1210b1c3c64d37a7fcaa:353277291,785d1176405a12104aff1f37e1082dd2:976716817,f26c1136a75a1210e6546226a429884d:-249271806,ce261d3e211a12100b7a9cd6ad22a945:1636300333</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-12 09:52:52</sys_created_on>
+        <sys_db_object display_value="" name="sys_script_include">sys_script_include</sys_db_object>
+        <sys_id>2bdeba60c1a3429ea30f782b058dea11</sys_id>
+        <sys_metadata>cc06593e831a12103a32ffc6feaad31f</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>RoleManagementScriptInclude</sys_name>
+        <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
+        <sys_parent/>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
+        <sys_scope_delete display_value="">02b72630a9384d0eaeaa80df7b05ec44</sys_scope_delete>
+        <sys_update_name>sys_script_include_cc06593e831a12103a32ffc6feaad31f</sys_update_name>
+        <sys_update_version display_value="sys_script_include_cc06593e831a12103a32ffc6feaad31f">3660df27835212103a32ffc6feaad3df</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-12 09:52:52</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

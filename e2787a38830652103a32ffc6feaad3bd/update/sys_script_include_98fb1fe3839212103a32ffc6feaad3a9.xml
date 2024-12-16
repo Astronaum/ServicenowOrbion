@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_1539348_so.SCIMUserService </api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description>To manage fetching users and roles and sending their patch</description>
+        <mobile_callable>false</mobile_callable>
+        <name>SCIMUserService </name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var SCIMUserService = Class.create();
+SCIMUserService.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+    getUserInfo: function() {
+        var response = {
+            message: 'Error fetching user data',
+            userData: []
+        };
+
+        try {
+            var token = gs.getProperty('x_1539348_so.scim.api.token');
+			gs.info(token);
+            if (!token) {
+                gs.error('API token is missing in system properties.');
+            }
+
+            // Initialize RESTMessageV2
+            var restMessage = new sn_ws.RESTMessageV2();
+			restMessage.setEndpoint('https://earth-apis.my.evidian.com/scim/v2/api/Users');
+    		restMessage.setHttpMethod('GET');
+    		restMessage.setRequestHeader('Authorization', 'Bearer ' + token);
+
+            var responseResult = restMessage.execute();
+            var statusCode = responseResult.getStatusCode();
+            var responseBody = responseResult.getBody();
+
+            if (statusCode == 200) {
+                var parsedResponse = JSON.parse(responseBody);
+                if (parsedResponse.Resources && parsedResponse.Resources.length > 0) {
+                    response.message = 'Success';
+                    response.userData = parsedResponse.Resources.map(function(user) {
+                        return {
+                            id: user.id,
+                            userName: user.userName,
+                            displayName: user.displayName,
+                            email: user.emails?.[0]?.value || 'No Email',
+                            roles: user.roles?.map(role => role.display) || []
+                        };
+                    });
+                } else {
+                    response.message = 'No users found.';
+                }
+            } else {
+                gs.error('SCIM API call failed. Status: ' + statusCode);
+                response.message = 'Failed with status: ' + statusCode;
+
+                // Log more details for debugging
+                /*gs.info('SCIM Response Body: ' + responseBody);
+                gs.info('SCIM Response Headers: ' + JSON.stringify(responseResult.getAllHeaders()));*/
+            }
+        } catch (e) {
+            response.message = 'Error: ' + e.message;
+            gs.error('Error while fetching user data: ' + e.message);
+        }
+
+        return JSON.stringify(response);
+    },
+	getRoles: function() {
+        var roles = [];
+        var gr = new GlideRecord('x_1539348_so_roles');
+        gr.query();
+        while (gr.next()) {
+            roles.push({
+            	value: gr.getValue('value'),
+            	label: gr.getValue('droit')
+            });
+        }
+        return JSON.stringify(roles);
+    },
+	addRoleToUser: function() {
+        var userId = this.getParameter('user_id');  // Get the user ID from the request
+        var roleSysId = this.getParameter('role');  // Get the role sys_id from the request
+        
+        var response = {
+            success: false,
+            message: 'Failed to add role to user.'
+        };
+
+        try {
+            // Validate input
+            if (!userId || !roleSysId) {
+                response.message = 'User ID or Role Sys ID is missing.';
+                return JSON.stringify(response);
+            }
+
+            // SCIM API URL for the user resource
+            var scimUserUrl = 'https://earth-apis.my.evidian.com/scim/v2/api/Users/' + userId;
+
+            // Construct the PATCH operation payload
+            var patchPayload = {
+                "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+                "Operations": [
+                    {
+                        "op": "add",
+                        "path": "roles",
+                        "value": [
+                            {
+                                "value": roleSysId // Role sys_id to be added
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            // Initialize the RESTMessageV2 to make a PATCH request to SCIM API
+            var restMessage = new sn_ws.RESTMessageV2();
+            restMessage.setEndpoint(scimUserUrl);
+            restMessage.setHttpMethod('PATCH');
+            restMessage.setRequestHeader('Authorization', 'Bearer ' + gs.getProperty('x_1539348_so.scim.api.token'));
+            restMessage.setRequestBody(JSON.stringify(patchPayload));
+
+            var responseResult = restMessage.execute();
+            var statusCode = responseResult.getStatusCode();
+            var responseBody = responseResult.getBody();
+
+            // Check the response
+            if (statusCode == 200) {
+                response.success = true;
+                response.message = 'Role added to user successfully.';
+            } else {
+                response.message = 'Failed with status: ' + statusCode + '. ' + responseBody;
+            }
+        } catch (e) {
+            response.message = 'Error: ' + e.message;
+            gs.error('Error while adding role to user: ' + e.message);
+        }
+
+        return JSON.stringify(response);
+    }
+});
+]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-12 10:03:48</sys_created_on>
+        <sys_id>98fb1fe3839212103a32ffc6feaad3a9</sys_id>
+        <sys_mod_count>44</sys_mod_count>
+        <sys_name>SCIMUserService </sys_name>
+        <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
+        <sys_update_name>sys_script_include_98fb1fe3839212103a32ffc6feaad3a9</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-12 15:24:19</sys_updated_on>
+    </sys_script_include>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>98fb1fe3839212103a32ffc6feaad3a9</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-12 10:03:48</sys_created_on>
+        <sys_id>0bdc97e3839212103a32ffc6feaad3ce</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-12 10:03:48</sys_updated_on>
+        <table>sys_script_include</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>
