@@ -19,63 +19,70 @@ SCIMUserService.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 
         try {
             var token = gs.getProperty('x_1539348_so.scim.api.token');
-			gs.info(token);
             if (!token) {
                 gs.error('API token is missing in system properties.');
+                return JSON.stringify(response);
             }
 
-            // Initialize RESTMessageV2
             var restMessage = new sn_ws.RESTMessageV2();
-			restMessage.setEndpoint('https://earth-apis.my.evidian.com/scim/v2/api/Users');
-    		restMessage.setHttpMethod('GET');
-    		restMessage.setRequestHeader('Authorization', 'Bearer ' + token);
+            var pageSize = 20; // Adjust this to match the SCIM API's max page size
+            var startIndex = 0; // Start index for pagination
+            var totalResults = 0; // To store total user count
+            var hasMoreData = true;
 
-            var responseResult = restMessage.execute();
-            var statusCode = responseResult.getStatusCode();
-            var responseBody = responseResult.getBody();
+            // Loop until all users are retrieved
+            while (hasMoreData) {
+                restMessage.setHttpMethod('GET');
+                restMessage.setEndpoint('https://earth-apis.my.evidian.com/scim/v2/api/Users' +
+                    '?startIndex=' + startIndex + '&count=' + pageSize);
+                restMessage.setRequestHeader('Authorization', 'Bearer ' + token);
 
-            if (statusCode == 200) {
-                var parsedResponse = JSON.parse(responseBody);
-                if (parsedResponse.Resources && parsedResponse.Resources.length > 0) {
-                    response.message = 'Success';
-                    response.userData = parsedResponse.Resources.map(function(user) {
-                        return {
-                            id: user.id,
-                            userName: user.userName,
-                            displayName: user.displayName,
-                            email: user.emails?.[0]?.value || 'No Email',
-                            roles: user.roles?.map(role => role.display) || []
-                        };
-                    });
+                var responseResult = restMessage.execute();
+                var statusCode = responseResult.getStatusCode();
+                var responseBody = responseResult.getBody();
+
+                if (statusCode == 200) {
+                    var parsedResponse = JSON.parse(responseBody);
+
+                    // Append users from this page to the userData array
+                    if (parsedResponse.Resources && parsedResponse.Resources.length > 0) {
+                        parsedResponse.Resources.forEach(function(user) {
+                            response.userData.push({
+                                id: user.id,
+                                userName: user.userName,
+                                displayName: user.displayName,
+                                email: user.emails?.[0]?.value || 'No Email',
+                                roles: user.roles?.map(role => role.display) || []
+                            });
+                        });
+                    }
+
+                    // Set totalResults from the first response
+                    if (totalResults === 0 && parsedResponse.totalResults) {
+                        totalResults = parsedResponse.totalResults;
+                    }
+
+                    // Update startIndex for the next page
+                    startIndex += pageSize;
+
+                    // Check if we fetched all results
+                    if (startIndex > totalResults) {
+                        hasMoreData = false;
+                    }
                 } else {
-                    response.message = 'No users found.';
+                    gs.error('SCIM API call failed. Status: ' + statusCode);
+                    response.message = 'Failed with status: ' + statusCode;
+                    hasMoreData = false;
                 }
-            } else {
-                gs.error('SCIM API call failed. Status: ' + statusCode);
-                response.message = 'Failed with status: ' + statusCode;
-
-                // Log more details for debugging
-                /*gs.info('SCIM Response Body: ' + responseBody);
-                gs.info('SCIM Response Headers: ' + JSON.stringify(responseResult.getAllHeaders()));*/
             }
+
+            response.message = 'Success';
         } catch (e) {
             response.message = 'Error: ' + e.message;
             gs.error('Error while fetching user data: ' + e.message);
         }
-
+		gs.info('Final Response: ' + JSON.stringify(response));
         return JSON.stringify(response);
-    },
-	getRoles: function() {
-        var roles = [];
-        var gr = new GlideRecord('x_1539348_so_roles');
-        gr.query();
-        while (gr.next()) {
-            roles.push({
-            	value: gr.getValue('value'),
-            	label: gr.getValue('droit')
-            });
-        }
-        return JSON.stringify(roles);
     },
 	addRoleToUser: function() {
         var userId = this.getParameter('user_id');  // Get the user ID from the request
@@ -143,14 +150,14 @@ SCIMUserService.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-12 10:03:48</sys_created_on>
         <sys_id>98fb1fe3839212103a32ffc6feaad3a9</sys_id>
-        <sys_mod_count>44</sys_mod_count>
+        <sys_mod_count>50</sys_mod_count>
         <sys_name>SCIMUserService </sys_name>
         <sys_package display_value="so" source="x_1539348_so">e2787a38830652103a32ffc6feaad3bd</sys_package>
         <sys_policy/>
         <sys_scope display_value="so">e2787a38830652103a32ffc6feaad3bd</sys_scope>
         <sys_update_name>sys_script_include_98fb1fe3839212103a32ffc6feaad3a9</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-12 15:24:19</sys_updated_on>
+        <sys_updated_on>2024-12-17 09:36:20</sys_updated_on>
     </sys_script_include>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>98fb1fe3839212103a32ffc6feaad3a9</id>
